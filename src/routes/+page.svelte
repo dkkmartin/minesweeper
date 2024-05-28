@@ -10,11 +10,13 @@
 				? 600
 				: score >= 30 && score < 40
 					? 500
-					: score >= 40
+					: score >= 40 && score < 60
 						? 400
-						: 1000
+						: score >= 60
+							? 300
+							: 1000
 	)
-	let isGameRunning = $state()
+	let isGameRunning = $state(false)
 
 	const gameBoard = $state(
 		Array(8)
@@ -35,33 +37,41 @@
 		}
 	}
 
-	$effect(() => {
-		console.log(intervalTime)
-
+	const startGame = () => {
 		isGameRunning = true
-		let gameLoop = setInterval(() => {
-			const loopChecker = triggerWhackEvent(gameBoard, min, max)
-			if (loopChecker === false) {
-				clearInterval(gameLoop)
-				isGameRunning = false
-			}
-		}, intervalTime)
+	}
+
+	$effect(() => {
+		let gameLoop: any
+		if (isGameRunning) {
+			gameLoop = setInterval(() => {
+				const loopChecker = triggerWhackEvent(gameBoard, min, max)
+				if (loopChecker === false) {
+					clearInterval(gameLoop)
+					isGameRunning = false
+				}
+			}, intervalTime)
+		}
 
 		return () => clearInterval(gameLoop)
 	})
 </script>
 
 <main class="flex justify-center items-center h-screen flex-col gap-4">
-	<h1 class="text-5xl font-bold">{score}</h1>
-	<section class="grid grid-cols-8 max-w-[calc(8*6rem)]">
+	{#if isGameRunning}
+		<h1 class="text-5xl font-bold">{score}</h1>
+	{:else}
+		<button onclick={() => startGame()}>Start Game</button>
+	{/if}
+	<section class="grid grid-cols-8">
 		{#each gameBoard as column, indexColumn}
 			{#each column as row, indexRow}
 				<button
 					disabled={!isGameRunning}
 					onclick={() => handleCellClick(indexColumn, indexRow)}
-					class="border h-24 w-24"
+					class="w-24 h-24 grid-item border"
 				>
-					{row ? 'Mole' : ''}
+					{row ? '&#9865;' : ''}
 				</button>
 			{/each}
 		{/each}
