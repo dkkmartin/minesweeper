@@ -1,5 +1,5 @@
 {
-	"name": "minesweeper",
+	"name": "whack-a-mole",
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
